@@ -5,8 +5,8 @@ A Next.js (App Router), TypeScript and Tailwind website for `merlinmagicallandsc
 ## Preview and local setup
 
 1. Use Node.js 22 and PostgreSQL. Install dependencies with `npm ci`.
-2. Keep the platform-created `.env` in the managed workspace, or copy `.env.example` to `.env` locally and fill in `DATABASE_URL`. Never commit credentials or expose them to the browser.
-3. Create the tables using `npx drizzle-kit push --config=drizzle.deploy.config.ts`. The platform’s original `drizzle.config.json` also works for its local `app_db`.
+2. Data is stored in Netlify Database, which connects automatically on Netlify and under `netlify dev` — no connection string is needed.
+3. Tables are created by the migrations in `netlify/database/migrations/`, which Netlify applies automatically on deploy. After changing `src/db/schema.ts`, run `npx drizzle-kit generate --name <change_name>`.
 4. Run `npm run dev` for local development. `/api/health` checks the database connection; submit the form once to verify the schema and actual writes. Use dummy test data outside production.
 
 ## Replace the editable content
@@ -22,7 +22,7 @@ Stock visuals are real photographs and footage from [Pexels](https://www.pexels.
 
 ## Receiving enquiries
 
-A successful submission shows a PostgreSQL-backed reference. This version does **not** automatically send an email. Check the private `landscape_enquiries` table in the database provider’s dashboard (Table Editor or SQL Editor), or use Drizzle Studio privately with `npx drizzle-kit studio --config=drizzle.deploy.config.ts`. The latest entries sort by `created_at` descending; search by the full `id` shown on a receipt. Restrict access to authorised staff, set a retention policy, and do not publish or share exports. Rotate the database password if it is ever exposed.
+A successful submission shows a PostgreSQL-backed reference. This version does **not** automatically send an email. Check the private `landscape_enquiries` table in the database provider’s dashboard (Table Editor or SQL Editor),. The latest entries sort by `created_at` descending; search by the full `id` shown on a receipt. Restrict access to authorised staff, set a retention policy, and do not publish or share exports. Rotate the database password if it is ever exposed.
 
 Expired abuse counters in `landscape_enquiry_rate_limits` are purged opportunistically on submissions. If an operational policy requires a fixed deletion schedule, also delete rows whose `expires_at` has passed through the database provider’s scheduler. A long random `ENQUIRY_RATE_SECRET` is recommended in production. Only configure `TRUSTED_CLIENT_IP_HEADER` if your hosting ingress strips or replaces it; otherwise the form uses a site-wide cap and per-email limits.
 

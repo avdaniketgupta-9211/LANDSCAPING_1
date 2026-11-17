@@ -91,7 +91,7 @@ export async function POST(request: Request) {
   const now = new Date();
   const window = Math.floor(now.getTime() / WINDOW_MS);
   const expiresAt = new Date((window + 1) * WINDOW_MS);
-  const secret = process.env.ENQUIRY_RATE_SECRET || process.env.DATABASE_URL || "local-enquiry-testing";
+  const secret = process.env.ENQUIRY_RATE_SECRET || process.env.SITE_ID || "local-enquiry-testing";
 
   try {
     const id = await db.transaction(async (tx) => {
